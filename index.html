@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>GLcn - 2026新年快乐</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== 2026新年主题配色 - 特别版 ===== */
+        :root {
+            /* 新年红金配色 - 保留原有变量名，调整值为喜庆色调 */
+            --primary: #e74c3c;          /* 中国红 */
+            --primary-dark: #c0392b;     /* 深红 */
+            --secondary: #f39c12;        /* 富贵金 */
+            --accent: #ffd700;           /* 金光 */
+            --accent-secondary: #ff6b6b; /* 珊瑚红 */
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --darkest: #0f172a;
+            --light: #f8fafc;
+            --lighter: #e2e8f0;
+            --text: #e2e8f0;
+            --text-light: #a0aec0;
+            --text-muted: #718096;
+            --white: #ffffff;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #f87171;
+            --info: #60a5fa;
+            
+            /* 学科颜色保留但微调饱和度适应新年 */
+            --subject-chinese: #e53e3e;
+            --subject-math: #3182ce;
+            --subject-english: #38a169;
+            --subject-physics: #d69e2e;
+            --subject-chemistry: #805ad5;
+            --subject-politics: #dd6b20;
+            --subject-other: #718096;
+            
+            /* 动画曲线保留 */
+            --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            
+            --duration-fast: 0.25s;
+            --duration-normal: 0.4s;
+            --duration-slow: 0.6s;
+            --duration-mega-slow: 0.8s;
+            
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 24px;
+            --border-radius-xl: 32px;
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 30px rgba(231, 76, 60, 0.4);
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-xxl: 4rem;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html { 
+            scroll-behavior: smooth; 
+            scroll-padding-top: 70px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: clamp(0.95rem, 4vw, 1.05rem);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all var(--duration-normal) var(--transition-smooth);
+        }
+
+        /* 2026新年背景 - LX彩蛋：背景色中 subtly 融入 L 和 X 的 Morse code 节奏动画 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(231, 76, 60, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(243, 156, 18, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.04) 0%, transparent 50%);
+            animation: backgroundShift 25s ease-in-out infinite;
+            z-index: -1;
+            will-change: transform;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { 
+                opacity: 0.3; 
+                transform: rotate(0deg) scale(1);
+            }
+            50% { 
+                opacity: 0.6; 
+                transform: rotate(3deg) scale(1.05);
+            }
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* 2026新年快速加载页 - 优化为极速本地时间获取 */
+        .loading {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all var(--duration-mega-slow) var(--transition-ease-out);
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-content {
+            text-align: center;
+            will-change: transform;
+            max-width: 90%;
+            padding: 2rem;
+        }
+
+        /* 2026新年烟花加载动画 */
+        .loading-firework {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+            position: relative;
+        }
+
+        .firework-core {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffd700, #e74c3c);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: fireworkExplode 1.5s ease-out infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .firework-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            animation: fireworkSpread 1.5s ease-out infinite;
+        }
+
+        .firework-particle:nth-child(2) { animation-delay: 0.1s; --angle: 0deg; }
+        .firework-particle:nth-child(3) { animation-delay: 0.1s; --angle: 45deg; }
+        .firework-particle:nth-child(4) { animation-delay: 0.1s; --angle: 90deg; }
+        .firework-particle:nth-child(5) { animation-delay: 0.1s; --angle: 135deg; }
+        .firework-particle:nth-child(6) { animation-delay: 0.1s; --angle: 180deg; }
+        .firework-particle:nth-child(7) { animation-delay: 0.1s; --angle: 225deg; }
+        .firework-particle:nth-child(8) { animation-delay: 0.1s; --angle: 270deg; }
+        .firework-particle:nth-child(9) { animation-delay: 0.1s; --angle: 315deg; }
+
+        @keyframes fireworkExplode {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        }
+
+        @keyframes fireworkSpread {
+            0% { 
+                transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateX(0); 
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateX(40px); 
+                opacity: 0;
+            }
+        }
+
+        /* 彩蛋：加载文字中隐藏 LX 2026 */
+        .loading-text {
+            color: #ffd700; 
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 800; 
+            margin-bottom: 0.5rem; 
+            transition: all var(--duration-normal) var(--transition-smooth);
+            animation: textFadeIn 0.6s var(--transition-ease-out) forwards;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .loading-text::after {
+            content: '2026';
+            display: block;
+            font-size: 0.8em;
+            color: #e74c3c;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        @keyframes textFadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading-subtext {
+            color: var(--text-light); 
+            font-size: 0.9rem;
+            margin-top: var(--spacing-sm);
+            opacity: 0;
+            animation: subtextFadeIn 0.6s var(--transition-ease-out) forwards 0.2s;
+        }
+
+        @keyframes subtextFadeIn {
+            0% { opacity: 0; transform: translateY(5px); }
+            100% { opacity: 0.8; transform: translateY(0); }
+        }
+
+        /* 本地时间快速显示 */
+        .loading-time {
+            color: var(--white);
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            animation: timeFadeIn 0.4s var(--transition-ease-out) forwards 0.3s;
+        }
+
+        @keyframes timeFadeIn {
+            to { opacity: 1; }
+        }
+
+        /* 导航栏 - 移除设置按钮 */
+        .navbar {
+            position: fixed; 
+            top: 0; 
+            width: 100%;
+            background: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(231, 76, 60, 0.2);
+            z-index: 1000; 
+            transition: all var(--duration-normal) var(--transition-smooth);
+            transform: translateY(0);
+            will-change: transform;
+        }
+        
+        .navbar-container {
+            max-width: 1200px; 
+            margin: 0 auto;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: var(--spacing-sm) clamp(1rem, 5vw, 2rem);
+            min-height: 70px;
+        }
+        
+        /* 2026新年Logo - 首字母LX隐藏设计 */
+        .logo {
+            font-size: clamp(1.6rem, 5vw, 1.8rem); 
+            font-weight: 800;
+            background: linear-gradient(135deg, #e74c3c, #ffd700);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem;
+            transition: all var(--duration-slow) var(--transition-spring);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        /* 彩蛋：logo悬停时显示LX（Love X）流光效果 */
+        .logo:hover {
+            transform: scale(1.05) translateY(-2px);
+            filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.6));
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            transition: width 0.6s ease;
+        }
+        
+        .logo:hover::after {
+            width: 100%;
+        }
+        
+        .nav-menu {
+            display: flex; 
+            gap: clamp(1rem, 3vw, 2.5rem); 
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            cursor: pointer; 
+            color: rgba(255, 255, 255, 0.8); 
+            font-weight: 500; 
+            padding: var(--spacing-xs) 0; 
+            position: relative; 
+            transition: all var(--duration-normal) var(--transition-spring);
+            user-select: none;
+        }
+        
+        .nav-menu li::after {
+            content: ''; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0;
+            width: 0; 
+            height: 2px; 
+            border-radius: 1px;
+            background: linear-gradient(90deg, #e74c3c, #ffd700);
+            transition: all var(--duration-normal) var(--transition-bounce);
+        }
+        
+        .nav-menu li:hover::after, 
+        .nav-menu li.active::after { 
+            width: 100%; 
+        }
+        
+        .nav-menu li:hover {
+            color: var(--white);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .nav-menu li.active {
+            color: #ffd700;
+            transform: translateY(-1px);
+        }
+        
+        /* 移动端菜单按钮 */
+        .mobile-toggle {
+            display: none; 
+            background: rgba(231, 76, 60, 0.2); 
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: white; 
+            font-size: 1.5rem; 
+            cursor: pointer;
+            padding: 0.5rem 1rem; 
+            min-width: 88px; 
+            min-height: 44px;
+            border-radius: var(--border-radius-lg); 
+            transition: all var(--duration-fast) var(--transition-bounce);
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            justify-content: center;
+        }
+        
+        .mobile-toggle:hover {
+            background: rgba(231, 76, 60, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .mobile-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-toggle span {
+            font-size: 0.9rem; 
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* 页面切换动画 */
+        .page {
+            display: none; 
+            flex: 1;
+            padding: var(--spacing-md);
+            opacity: 0; 
+            transform: translateY(20px);
+            transition: all var(--duration-mega-slow) var(--transition-smooth);
+            height: auto; 
+            min-height: calc(100vh - 70px);
+        }
+        
+        .page.active { 
+            display: block; 
+            opacity: 1; 
+            transform: translateY(0);
+        }
+        
+        .page.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        /* 2026新年英雄区 - 主题色 */
+        .hero {
+            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 50%, #c0392b 100%);
+            color: white; 
+            text-align: center; 
+            padding: clamp(2rem, 6vw, 4rem) clamp(1rem, 5vw, 2rem);
+            position: relative; 
+            overflow: hidden;
+            border-radius: var(--border-radius-lg);
+            margin: var(--spacing-sm) auto;
+            box-shadow: var(--shadow-xl), 0 0 40px rgba(231, 76, 60, 0.2);
+            max-width: 1200px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        /* 彩蛋：背景中隐约的2026和晨曦光效 */
+        .hero::before {
+            content: '';
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(231, 76, 60, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 70% 80%, rgba(255, 215, 0, 0.15) 0%, transparent 40%);
+            animation: heroPulse 8s var(--transition-smooth) infinite;
+            z-index: 1;
+        }
+        
+        @keyframes heroPulse {
+            0%, 100% { 
+                opacity: 0.4; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.02);
+            }
+        }
+
+        .hero-content {
+            position: relative; 
+            z-index: 1;
+            width: 100%; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 6vw, 2.8rem); 
+            font-weight: 800; 
+            margin-bottom: 1rem; 
+            line-height: 1.2;
+            position: relative; 
+            z-index: 1;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s var(--transition-ease-out) forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 2026新年时间显示 - 快速渲染优化 */
+        #beijingTime {
+            font-size: clamp(2rem, 8vw, 3.2rem); 
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #e74c3c, #ffd700);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            text-align: center; 
+            letter-spacing: 0.05em;
+            animation: timeGlow 2s var(--transition-smooth) infinite alternate;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes timeGlow {
+            from { 
+                filter: drop-shadow(0 0 5px rgba(231, 76, 60, 0.4));
+            }
+            to { 
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+            }
+        }
+
+        .time-date {
+            font-size: clamp(1rem, 3vw, 1.4rem); 
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s var(--transition-ease-out) forwards 0.2s;
+            font-weight: 500;
+        }
+
+        /* 优化后的快速显示组件 */
+        .uptime-display {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem); 
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem; 
+            background: rgba(231, 76, 60, 0.15);
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm) var(--spacing-md); 
+            display: flex;
+            align-items: center; 
+            gap: var(--spacing-sm); 
+            justify-content: center;
+            width: fit-content; 
+            margin-left: auto; 
+            margin-right: auto; 
+            text-align: center;
+            transition: all var(--duration-normal) var(--transition-smooth);
+            animation: fadeInUp 1s var(--transition-ease-out) forwards 0.3s;
+        }
+
+        .uptime-display:hover {
+            background: rgba(231, 76, 60, 0.25);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .uptime-icon {
+            font-size: 1.2rem; 
+            color: #ffd700;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .ua-display {
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm) var(--spacing-md); 
+            margin-top: 0.5rem;
+            display: flex; 
+            align-items: center; 
+            gap: var(--spacing-sm);
+            font-size: clamp(0.85rem, 2.5vw, 1rem); 
+            color: rgba(255, 255, 255, 0.9);
+            transition: all var(--duration-normal) var(--transition-smooth); 
+            justify-content: center;
+            width: fit-content; 
+            margin-left: auto; 
+            margin-right: auto; 
+            text-align: center;
+            animation: fadeInUp 1s var(--transition-ease-out) forwards 0.4s;
+        }
+
+        .ua-display:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .ua-icon {
+            font-size: 1.2rem; 
+            color: #ffd700;
+        }
+
+        /* 2026新年特别标识 - STNStudio改为新春版 */
+        .stn-studio-display {
+            position: relative; 
+            margin-top: 1.5rem; 
+            padding: 1rem 2rem;
+            background: rgba(231, 76, 60, 0.15); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3); 
+            border-radius: 50px;
+            font-size: clamp(1.1rem, 3vw, 1.5rem); 
+            font-weight: 700; 
+            color: var(--white);
+            text-align: center; 
+            animation: fadeInUp 1s var(--transition-ease-out) forwards 0.5s, stnGlow 3s ease-in-out infinite;
+            transition: all var(--duration-normal) var(--transition-smooth); 
+            overflow: hidden;
+        }
+
+        .stn-studio-display::before {
+            content: '';
+            position: absolute; 
+            top: 50%; 
+            left: 50%;
+            width: 120%; 
+            height: 120%;
+            transform: translate(-50%, -50%);
+            background: conic-gradient(from 0deg, transparent, rgba(231, 76, 60, 0.4), rgba(255, 215, 0, 0.4), transparent);
+            animation: stnRotate 4s linear infinite; 
+            z-index: -1; 
+            border-radius: 50px;
+        }
+
+        .stn-studio-display::after {
+            content: '';
+            position: absolute; 
+            top: 2px; 
+            left: 2px; 
+            right: 2px; 
+            bottom: 2px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e); 
+            border-radius: 48px; 
+            z-index: -1;
+        }
+
+        @keyframes stnRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes stnGlow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 40px rgba(231, 76, 60, 0.2);
+            }
+        }
+
+        .stn-studio-display:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+
+        .content-section {
+            padding-top: 70px; 
+            min-height: 100vh;
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* 卡片样式 - 新年红金主题 */
+        .feature-card {
+            background: rgba(231, 76, 60, 0.08); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.15); 
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl); 
+            text-align: center;
+            transition: all var(--duration-normal) var(--transition-bounce);
+            position: relative; 
+            overflow: hidden;
+            margin: var(--spacing-md) auto; 
+            max-width: 800px;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute; 
+            top: 0; 
+            left: -100%;
+            width: 100%; 
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left var(--duration-mega-slow) var(--transition-smooth);
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl), 0 0 30px rgba(231, 76, 60, 0.3);
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 4rem; 
+            color: #e74c3c;
+            margin-bottom: var(--spacing-md);
+            transition: all var(--duration-normal) var(--transition-bounce);
+            display: inline-block;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            color: #ffd700;
+        }
+
+        .feature-title {
+            font-size: 1.5rem; 
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm); 
+            color: var(--white);
+        }
+
+        .feature-description {
+            color: var(--text-light); 
+            line-height: 1.6;
+        }
+
+        .announcement-content {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            min-height: calc(100vh - 300px); 
+            padding: var(--spacing-lg) 0;
+        }
+
+        /* 作业卡片 - 新年优化 */
+        .homework-container {
+            max-width: 1200px; 
+            margin: 0 auto;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .homework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .homework-card {
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl); 
+            text-align: center;
+            transition: all var(--duration-normal) var(--transition-bounce);
+            cursor: pointer; 
+            position: relative; 
+            overflow: hidden;
+            min-height: 200px; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+        }
+
+        .homework-card::before {
+            content: '';
+            position: absolute; 
+            top: 0; 
+            left: -100%;
+            width: 100%; 
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.08), transparent);
+            transition: left var(--duration-mega-slow) var(--transition-smooth);
+        }
+
+        .homework-card:hover::before {
+            left: 100%;
+        }
+
+        .homework-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl), 0 0 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .homework-card.chinese { border-left: 4px solid var(--subject-chinese); }
+        .homework-card.math { border-left: 4px solid var(--subject-math); }
+        .homework-card.english { border-left: 4px solid var(--subject-english); }
+        .homework-card.physics { border-left: 4px solid var(--subject-physics); }
+        .homework-card.chemistry { border-left: 4px solid var(--subject-chemistry); }
+        .homework-card.politics { border-left: 4px solid var(--subject-politics); }
+        .homework-card.other { border-left: 4px solid var(--subject-other); }
+
+        .homework-icon {
+            font-size: 3rem; 
+            margin-bottom: var(--spacing-md);
+            transition: all var(--duration-normal) var(--transition-bounce);
+        }
+
+        .homework-card:hover .homework-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .homework-card.chinese .homework-icon { color: var(--subject-chinese); }
+        .homework-card.math .homework-icon { color: var(--subject-math); }
+        .homework-card.english .homework-icon { color: var(--subject-english); }
+        .homework-card.physics .homework-icon { color: var(--subject-physics); }
+        .homework-card.chemistry .homework-icon { color: var(--subject-chemistry); }
+        .homework-card.politics .homework-icon { color: var(--subject-politics); }
+        .homework-card.other .homework-icon { color: var(--subject-other); }
+
+        .homework-title {
+            font-size: 1.3rem; 
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm); 
+            color: var(--white);
+        }
+
+        .homework-subtitle {
+            color: var(--text-light); 
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .homework-status {
+            display: inline-block; 
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius-sm); 
+            font-size: 0.8rem;
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+        }
+
+        .homework-status.pending {
+            background: rgba(231, 76, 60, 0.2); 
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .homework-status.completed {
+            background: rgba(72, 187, 120, 0.2); 
+            color: var(--success);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            z-index: 2000; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all var(--duration-normal) var(--transition-smooth);
+        }
+
+        .modal-overlay.active {
+            opacity: 1; 
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(231, 76, 60, 0.3); 
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl); 
+            max-width: 500px;
+            width: 90%; 
+            max-height: 80vh; 
+            overflow-y: auto;
+            transform: scale(0.8) translateY(50px);
+            transition: all var(--duration-slow) var(--transition-bounce);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg); 
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .modal-title {
+            font-size: 1.5rem; 
+            font-weight: 700;
+            color: var(--white); 
+            display: flex;
+            align-items: center; 
+            gap: var(--spacing-sm);
+        }
+
+        .modal-close {
+            background: none; 
+            border: none; 
+            color: var(--text-light);
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            padding: var(--spacing-xs);
+            border-radius: var(--border-radius-sm); 
+            transition: all var(--duration-fast) var(--transition-smooth);
+        }
+
+        .modal-close:hover {
+            color: #e74c3c; 
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .modal-body {
+            color: var(--text-light); 
+            line-height: 1.6;
+        }
+
+        .modal-body h4 {
+            color: var(--white); 
+            margin-bottom: var(--spacing-sm);
+            font-size: 1.1rem;
+        }
+
+        .modal-body p {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-body .info-grid {
+            display: grid; 
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md); 
+            margin: var(--spacing-md) 0;
+        }
+
+        .modal-body .info-item {
+            background: rgba(255, 255, 255, 0.05); 
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-sm); 
+            border-left: 3px solid #e74c3c;
+        }
+
+        .modal-body .info-label {
+            font-size: 0.8rem; 
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-body .info-value {
+            color: var(--white); 
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            margin-top: var(--spacing-lg); 
+            padding-top: var(--spacing-md);
+            border-top: 1px solid rgba(231, 76, 60, 0.2); 
+            text-align: center;
+        }
+
+        .modal-button {
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            border: none; 
+            color: white; 
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius); 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all var(--duration-fast) var(--transition-bounce);
+        }
+
+        .modal-button:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.4);
+        }
+
+        footer {
+            background: var(--darkest); 
+            color: rgba(255, 255, 255, 0.8);
+            padding: var(--spacing-lg) clamp(1rem, 5vw, 2rem); 
+            text-align: center;
+            position: relative; 
+            overflow: hidden; 
+            margin-top: auto;
+        }
+        
+        footer::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(231, 76, 60, 0.15) 0%, transparent 70%);
+        }
+        
+        .footer-content { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            position: relative; 
+            z-index: 1;
+            transition: all var(--duration-normal) var(--transition-smooth);
+        }
+        
+        .footer-content:hover {
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed; 
+                top: 70px; 
+                left: -100%;
+                width: 100%; 
+                height: calc(100vh - 70px); 
+                background: rgba(26, 26, 46, 0.95);
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: flex-start;
+                padding-top: var(--spacing-xl); 
+                transition: left 0.5s var(--transition-bounce);
+                backdrop-filter: blur(20px); 
+                border-top: 1px solid rgba(231, 76, 60, 0.2);
+            }
+            
+            .nav-menu li { 
+                width: 80%; 
+                text-align: center; 
+                padding: var(--spacing-md); 
+                margin: var(--spacing-xs) 0;
+                border-radius: var(--border-radius);
+                transition: all var(--duration-normal) var(--transition-smooth);
+            }
+
+            .nav-menu li:hover {
+                background: rgba(231, 76, 60, 0.15);
+                transform: translateX(5px);
+            }
+            
+            .nav-menu li::after {
+                left: 50%; 
+                transform: translateX(-50%);
+            }
+            
+            .nav-menu.active { 
+                left: 0; 
+            }
+            
+            .mobile-toggle { 
+                display: flex; 
+            }
+
+            .hero {
+                margin: var(--spacing-xs) auto;
+                padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 1.5rem);
+            }
+
+            #beijingTime {
+                font-size: clamp(1.8rem, 6vw, 2.5rem);
+            }
+
+            .time-date {
+                font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            }
+
+            .uptime-display {
+                font-size: clamp(0.8rem, 2vw, 0.95rem);
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .ua-display {
+                font-size: clamp(0.8rem, 2vw, 0.95rem);
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .stn-studio-display {
+                padding: 0.8rem 1.5rem;
+                font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+            }
+
+            .homework-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .homework-card {
+                min-height: 180px;
+                padding: var(--spacing-lg);
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: var(--spacing-lg);
+                margin: var(--spacing-md);
+            }
+
+            .modal-body .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .loading-text {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page {
+                padding: var(--spacing-sm);
+            }
+
+            .hero {
+                padding: clamp(1.2rem, 4vw, 2.5rem) clamp(0.5rem, 3vw, 1rem);
+            }
+
+            #beijingTime {
+                font-size: clamp(1.6rem, 5vw, 2.2rem);
+            }
+
+            .time-date {
+                font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            }
+
+            .uptime-display {
+                font-size: clamp(0.75rem, 2vw, 0.9rem);
+            }
+
+            .ua-display {
+                font-size: clamp(0.8rem, 2vw, 0.95rem);
+            }
+
+            .stn-studio-display {
+                padding: 0.6rem 1.2rem;
+                font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            }
+
+            .homework-card {
+                min-height: 160px;
+                padding: var(--spacing-md);
+            }
+
+            .homework-icon {
+                font-size: 2.5rem;
+            }
+
+            .homework-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary), #ffd700);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--primary-dark), #f39c12);
+        }
+
+        ::selection {
+            background: rgba(231, 76, 60, 0.3);
+            color: var(--white);
+        }
+
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .ua-pc { color: #60a5fa; }
+        .ua-ios { color: #4ade80; }
+        .ua-android { color: #ffd700; }
+        .ua-mobile { color: #f472b6; }
+
+        .page-content {
+            padding-top: 70px; 
+            min-height: 100vh;
+            display: flex; 
+            flex-direction: column;
+        }
+
+        .announcement-content {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            min-height: calc(100vh - 300px); 
+            padding: var(--spacing-lg) 0;
+        }
+
+        .homework-content {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            padding: var(--spacing-lg) 0;
+        }
+
+        .stagger-fade-in {
+            opacity: 0; 
+            transform: translateY(20px);
+            animation: staggerFadeIn 0.6s var(--transition-bounce) forwards;
+        }
+
+        @keyframes staggerFadeIn {
+            to {
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        /* 历史记录时间线 - 新年红金配色 */
+        .history-content {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            padding: var(--spacing-lg) 0;
+            min-height: calc(100vh - 300px);
+        }
+
+        .history-container {
+            max-width: 900px; 
+            margin: 0 auto;
+            padding: var(--spacing-lg) 0; 
+            width: 100%;
+        }
+
+        .current-version-banner {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: rgba(231, 76, 60, 0.1); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.2); 
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .current-version-header {
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.2);
+            flex-wrap: wrap; 
+            gap: var(--spacing-sm);
+        }
+
+        .current-version-title {
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            color: #ffd700;
+            display: flex; 
+            align-items: center; 
+            gap: var(--spacing-xs);
+        }
+
+        .current-version-title i {
+            animation: fa-spin 2s linear infinite;
+            color: #e74c3c;
+        }
+
+        .current-version-badge {
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            color: var(--white);
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            padding: var(--spacing-xs) var(--spacing-sm); 
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .current-version-text {
+            display: flex; 
+            align-items: center; 
+            gap: var(--spacing-sm);
+            color: var(--text-light); 
+            font-size: 0.95rem; 
+            line-height: 1.5;
+        }
+
+        .history-timeline {
+            position: relative; 
+            padding-left: var(--spacing-lg);
+            margin-left: auto;
+            margin-right: auto; 
+            max-width: 800px;
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute; 
+            left: 0; 
+            top: 0;
+            height: 100%; 
+            width: 3px;
+            background: linear-gradient(to bottom, #e74c3c, #ffd700);
+            border-radius: 2px;
+        }
+
+        .history-item {
+            position: relative; 
+            margin-bottom: var(--spacing-xl);
+            opacity: 0; 
+            transform: translateX(-20px);
+            animation: slideInLeft 0.6s var(--transition-smooth) forwards;
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1; 
+                transform: translateX(0);
+            }
+        }
+
+        .history-item::before {
+            content: '';
+            position: absolute; 
+            left: -2.5rem; 
+            top: 1.5rem;
+            width: 16px; 
+            height: 16px; 
+            background: #e74c3c;
+            border: 3px solid var(--dark); 
+            border-radius: 50%;
+            box-shadow: 0 0 10px #e74c3c; 
+            z-index: 1;
+            transition: all var(--duration-normal) var(--transition-bounce);
+        }
+
+        .history-item:hover::before {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px #ffd700;
+            background: #ffd700;
+        }
+
+        .history-card {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.1); 
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg); 
+            transition: all var(--duration-normal) var(--transition-bounce);
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .history-card:hover {
+            transform: translateX(10px) scale(1.02);
+            box-shadow: var(--shadow-xl), 0 0 20px rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        .history-header {
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            margin-bottom: var(--spacing-sm);
+            flex-wrap: wrap; 
+            gap: var(--spacing-sm);
+        }
+
+        .history-date {
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            color: #ffd700;
+            display: flex; 
+            align-items: center; 
+            gap: var(--spacing-xs);
+        }
+
+        .history-date i {
+            font-size: 0.9rem; 
+            color: #e74c3c;
+        }
+
+        .history-version {
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: var(--white);
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            padding: var(--spacing-xs) var(--spacing-sm); 
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            letter-spacing: 0.5px;
+        }
+
+        .history-changes {
+            list-style: none; 
+            padding-left: 0; 
+            margin: var(--spacing-sm) 0 0 0;
+        }
+
+        .history-change {
+            padding: var(--spacing-xs) 0; 
+            color: var(--text-light);
+            position: relative; 
+            padding-left: var(--spacing-md);
+            font-size: 0.95rem; 
+            line-height: 1.5;
+        }
+
+        .history-change::before {
+            content: '•'; 
+            position: absolute; 
+            left: 0;
+            color: #e74c3c; 
+            font-weight: bold; 
+            font-size: 1.2rem;
+        }
+
+        .history-change:not(:last-child) {
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.05);
+        }
+
+        .history-banner {
+            text-align: center; 
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: rgba(231, 76, 60, 0.05); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.1); 
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 800px;
+        }
+
+        .history-banner-icon {
+            font-size: 3rem; 
+            color: #ffd700;
+            margin-bottom: var(--spacing-md);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .history-banner-title {
+            font-size: 1.8rem; 
+            font-weight: 800;
+            background: linear-gradient(135deg, #e74c3c, #ffd700);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .history-banner-subtitle {
+            color: var(--text-light); 
+            font-size: 1rem;
+        }
+
+        .feedback-section {
+            margin-top: var(--spacing-xl);
+            padding: 0 var(--spacing-md);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 2026新年彩蛋：特定时间触发的祝福动画 */
+        .new-year-blessing {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.95), rgba(243, 156, 18, 0.95));
+            padding: 2rem;
+            border-radius: var(--border-radius-xl);
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 50px rgba(231, 76, 60, 0.5);
+            z-index: 5000;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.6s var(--transition-spring);
+            pointer-events: none;
+        }
+
+        .new-year-blessing.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .blessing-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .blessing-sub {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* 隐藏设置相关元素 */
+        #settingsMenuItem {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="performance-mode">
+    <!-- 2026新年高性能粒子画布 -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- 优化加载页 - 极速本地时间 -->
+    <div class="loading" id="loading">
+        <div class="loading-content">
+            <div class="loading-firework">
+                <div class="firework-core"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+                <div class="firework-particle"></div>
+            </div>
+            <div class="loading-text" id="loadingText">GLcn · 2026</div>
+            <div class="loading-time" id="loadingTime">--:--:--</div>
+            <div class="loading-subtext" id="loadingSubtext">，新年快乐 ✨</div>
+        </div>
+    </div>
+
+    <!-- 新年祝福彩蛋 -->
+    <div class="new-year-blessing" id="newYearBlessing">
+        <div class="blessing-text">🎊 2026 新年快乐 🎊</div>
+        <div class="blessing-sub">愿你如晨曦般温暖明亮</div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <i class="fas fa-dragon"></i>
+                GLcn
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li data-page="home" class="active">首页</li>
+                <li data-page="announcement">公告</li>
+                <li data-page="history">关于我们</li>
+                <li data-page="homework">作业</li>
+                <li data-page="download">下载客户端</li>
+                <!-- 设置按钮已隐藏 -->
+            </ul>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="打开菜单">
+                <i class="fas fa-bars"></i>
+                <span>导航栏</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="page active" data-page="home" id="page-home">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>2026 · 万事顺遂</h1>
+                    <div id="beijingTime">00:00:00</div>
+                    <div class="time-date" id="beijingDate">2026年1月1日</div>
+                    <div class="uptime-display" id="uptimeDisplay">
+                        <i class="fas fa-heart uptime-icon"></i>
+                        <span id="uptimeText">安全运行时间：计算中...</span>
+                    </div>
+                    <div class="ua-display" id="uaDisplay">
+                        <i class="fas fa-mobile-alt ua-icon" id="uaIcon"></i>
+                        <span id="uaText">正在识别设备...</span>
+                    </div>
+                    <div class="stn-studio-display">
+                        2026新春版 · STNStudio
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page" data-page="announcement" id="page-announcement">
+            <div class="announcement-content">
+                <div class="content-section">
+                    <div class="feature-card stagger-fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3 class="feature-title">新春公告</h3>
+                        <p class="feature-description">微信公众号搜:STcn关注可更快看到新信息 丨点击下载客户端快速下载安卓客户端，可快速查看信息<br><br>🎊 祝你们新年快乐，万事胜意！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" data-page="history" id="page-history">
+            <div class="history-content">
+                <div class="history-container">
+                    <div class="history-banner stagger-fade-in">
+                        <div class="history-banner-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <h2 class="history-banner-title">关于我们</h2>
+                        <p class="history-banner-subtitle">记录每一次进步的足迹 · 2026与爱同行</p>
+                    </div>
+                    
+                    <div class="current-version-banner stagger-fade-in" style="animation-delay: 0.1s">
+                        <div class="current-version-header">
+                            <div class="current-version-title">
+                                <i class="fas fa-sync-alt"></i>
+                                进行中
+                            </div>
+                            <div class="current-version-badge">
+                                优化
+                            </div>
+                        </div>
+                        <div class="current-version-text">
+                            <i class="fas fa-cog fa-spin"></i>
+                            Version 2.1
+                        </div>
+                    </div>
+
+                    <div class="history-timeline" id="historyTimeline">
+                        <!-- 动态渲染 -->
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <div class="feature-card stagger-fade-in">
+                            <div class="feature-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <h3 class="feature-title">用户反馈</h3>
+                            <p class="feature-description">您的意见对我们很重要，欢迎通过腾讯问卷提交反馈</p>
+                            <button class="modal-button" onclick="window.open('https://docs.qq.com/form/page/DT0hkWkRCYXNvcHFm', '_blank')">
+                                <i class="fas fa-external-link-alt"></i> 提交反馈
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" data-page="homework" id="page-homework">
+            <div class="homework-content">
+                <div class="homework-container">
+                    <div class="feature-card stagger-fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h3 class="feature-title">作业列表</h3>
+                        <p class="feature-description">点击以下科目查看详细作业内容<br><span style="font-size: 0.8rem; opacity: 0.7;">悄悄话：愿学业进步 ✨</span></p>
+                    </div>
+                    
+                    <div class="homework-grid">
+                        <div class="homework-card chinese stagger-fade-in" data-subject="chinese">
+                            <div class="homework-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h4 class="homework-title">语文作业</h4>
+                            <p class="homework-subtitle">无数据</p>
+                            <span class="homework-status pending">L</span>
+                        </div>
+
+                        <div class="homework-card math stagger-fade-in" data-subject="math">
+                            <div class="homework-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <h4 class="homework-title">数学作业</h4>
+                            <p class="homework-subtitle">无数据</p>
+                            <span class="homework-status pending">L</span>
+                        </div>
+
+                        <div class="homework-card english stagger-fade-in" data-subject="english">
+                            <div class="homework-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <h4 class="homework-title">英语作业</h4>
+                            <p class="homework-subtitle">打卡</p>
+                            <span class="homework-status completed">1月22日</span>
+                        </div>
+
+                        <div class="homework-card physics stagger-fade-in" data-subject="physics">
+                            <div class="homework-icon">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <h4 class="homework-title">物理作业</h4>
+                            <p class="homework-subtitle">复习</p>
+                            <span class="homework-status pending">持续更新</span>
+                        </div>
+
+                        <div class="homework-card chemistry stagger-fade-in" data-subject="chemistry">
+                            <div class="homework-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <h4 class="homework-title">化学作业</h4>
+                            <p class="homework-subtitle">无数据</p>
+                            <span class="homework-status pending">L</span>
+                        </div>
+
+                        <div class="homework-card politics stagger-fade-in" data-subject="politics">
+                            <div class="homework-icon">
+                                <i class="fas fa-landmark"></i>
+                            </div>
+                            <h4 class="homework-title">政治作业</h4>
+                            <p class="homework-subtitle">暂无</p>
+                            <span class="homework-status pending">1月22日</span>
+                        </div>
+
+                        <div class="homework-card other stagger-fade-in" data-subject="other">
+                            <div class="homework-icon">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                            <h4 class="homework-title">其他作业</h4>
+                            <p class="homework-subtitle">暂无</p>
+                            <span class="homework-status completed">暂无</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" data-page="download" id="page-download">
+            <div class="download-content">
+                <div class="content-section">
+                    <div class="feature-card stagger-fade-in">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h3 class="feature-title">下载安卓客户端</h3>
+                        <p class="feature-description">点击下方按钮获取最新版本的客户端应用<br><span style="font-size: 0.8rem; opacity: 0.7;">浏览已优化性能</span></p>
+                        <button class="modal-button" onclick="window.open('https://wwp.lanzoup.com/iBO0U3es5rad', '_blank')">
+                            <i class="fas fa-download"></i> 立即下载
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 作业详情模态框 -->
+    <div class="modal-overlay" id="homeworkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">
+                    <i class="fas fa-book"></i>
+                    <span id="modalSubject">作业详情</span>
+                </h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button" id="modalButton">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025-2026 最终解释权 GLcn | STNStudio · 2026新春快乐</p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.6;">谨以此站献给每一个平凡而闪耀的清晨</p>
+        </div>
+    </footer>
+
+    <script>
+        // 2026新年高性能粒子系统 - 特别版（LX彩蛋：粒子数量组成特定图案）
+        class NewYearParticleSystem {
+            constructor() {
+                this.canvas = document.getElementById('particles-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.fireworks = [];
+                this.mouse = { x: -1000, y: -1000 };
+                this.animationId = null;
+                this.lastTime = 0;
+                this.frameCount = 0;
+                
+                // 彩蛋：粒子颜色使用晨曦色系（金、橙、红）
+                this.colors = ['#ffd700', '#ff6b6b', '#f39c12', '#e74c3c', '#ff9ff3'];
+                
+                this.init();
+            }
+            
+            init() {
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                this.createParticles();
+                this.animate();
+                
+                // 鼠标交互
+                window.addEventListener('mousemove', (e) => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+                });
+                
+                // 点击放烟花
+                window.addEventListener('click', (e) => {
+                    this.createFirework(e.clientX, e.clientY);
+                });
+                
+                // 自动放烟花彩蛋：每分钟在第26秒放烟花（的26）
+                setInterval(() => {
+                    const now = new Date();
+                    if (now.getSeconds() === 26) {
+                        this.createFirework(
+                            Math.random() * this.canvas.width,
+                            Math.random() * this.canvas.height * 0.5
+                        );
+                    }
+                }, 1000);
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            createParticles() {
+                const count = Math.min(80, Math.floor((this.canvas.width * this.canvas.height) / 15000));
+                
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        radius: Math.random() * 2 + 1,
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        alpha: Math.random() * 0.5 + 0.3,
+                        pulse: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            
+            createFirework(x, y) {
+                const particleCount = 20;
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (Math.PI * 2 / particleCount) * i;
+                    const velocity = Math.random() * 3 + 2;
+                    this.fireworks.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * velocity,
+                        vy: Math.sin(angle) * velocity,
+                        life: 60,
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        size: Math.random() * 3 + 2
+                    });
+                }
+            }
+            
+            animate() {
+                this.animationId = requestAnimationFrame(() => this.animate());
+                
+                // 每2帧渲染一次以优化性能
+                this.frameCount++;
+                if (this.frameCount % 2 !== 0) return;
+                
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 绘制背景粒子
+                this.particles.forEach(p => {
+                    p.pulse += 0.05;
+                    const currentAlpha = p.alpha + Math.sin(p.pulse) * 0.2;
+                    
+                    // 鼠标交互
+                    const dx = this.mouse.x - p.x;
+                    const dy = this.mouse.y - p.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        const force = (150 - distance) / 150;
+                        p.vx += (dx / distance) * force * 0.02;
+                        p.vy += (dy / distance) * force * 0.02;
+                    }
+                    
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    // 边界处理
+                    if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+                    
+                    // 绘制
+                    this.ctx.save();
+                    this.ctx.globalAlpha = Math.max(0.1, currentAlpha);
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.shadowColor = p.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                });
+                
+                // 绘制烟花
+                this.fireworks = this.fireworks.filter(f => {
+                    f.life--;
+                    f.x += f.vx;
+                    f.y += f.vy;
+                    f.vy *= 0.98; // 阻力
+                    f.vx *= 0.98;
+                    
+                    if (f.life > 0) {
+                        this.ctx.save();
+                        this.ctx.globalAlpha = f.life / 60;
+                        this.ctx.fillStyle = f.color;
+                        this.ctx.shadowBlur = 15;
+                        this.ctx.shadowColor = f.color;
+                        this.ctx.beginPath();
+                        this.ctx.arc(f.x, f.y, f.size * (f.life / 60), 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.restore();
+                        return true;
+                    }
+                    return false;
+                });
+                
+                // 连线（仅部分粒子）
+                this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.1)';
+                this.ctx.lineWidth = 0.5;
+                for (let i = 0; i < this.particles.length; i += 5) {
+                    for (let j = i + 1; j < this.particles.length; j += 5) {
+                        const dx = this.particles[j].x - this.particles[i].x;
+                        const dy = this.particles[j].y - this.particles[i].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                            this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+            }
+        }
+
+        // 极速本地时间获取（优化加载速度）
+        function updateLocalTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('zh-CN', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('zh-CN', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            // 同时更新加载页和主页时间
+            const loadingTime = document.getElementById('loadingTime');
+            const beijingTime = document.getElementById('beijingTime');
+            const beijingDate = document.getElementById('beijingDate');
+            
+            if (loadingTime) loadingTime.textContent = timeString;
+            if (beijingTime) beijingTime.textContent = timeString;
+            if (beijingDate) beijingDate.textContent = dateString;
+            
+            return now;
+        }
+
+        // 快速UA检测
+        function detectUA() {
+            const ua = navigator.userAgent.toLowerCase();
+            const uaDisplay = document.getElementById('uaDisplay');
+            const uaIcon = document.getElementById('uaIcon');
+            const uaText = document.getElementById('uaText');
+            
+            let deviceType = '';
+            let iconClass = '';
+            let deviceClass = '';
+            
+            if (/iphone|ipad|ipod/.test(ua)) {
+                deviceType = 'iOS设备';
+                iconClass = 'fa-mobile-alt';
+                deviceClass = 'ua-ios';
+            }
+            else if (/android/.test(ua)) {
+                deviceType = '安卓手机';
+                iconClass = 'fa-android';
+                deviceClass = 'ua-android';
+            }
+            else if (/windows/.test(ua)) {
+                deviceType = 'Windows PC';
+                iconClass = 'fa-desktop';
+                deviceClass = 'ua-pc';
+            }
+            else if (/macintosh/.test(ua)) {
+                deviceType = 'Mac设备';
+                iconClass = 'fa-desktop';
+                deviceClass = 'ua-pc';
+            }
+            else {
+                deviceType = '未知设备';
+                iconClass = 'fa-question-circle';
+                deviceClass = 'ua-mobile';
+            }
+            
+            if (uaText) uaText.textContent = `当前访问：${deviceType}`;
+            if (uaIcon) {
+                uaIcon.className = `fas ${iconClass} ua-icon ${deviceClass}`;
+            }
+        }
+
+        // 安全运行时间计算
+        let startTime = new Date('2025-12-18T18:00:00');
+        
+        function updateUptime() {
+            const now = new Date();
+            const diff = now - startTime;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const uptimeText = document.getElementById('uptimeText');
+            if (uptimeText) {
+                uptimeText.textContent = `安全运行：${days}天 ${hours}时 ${minutes}分 ${seconds}秒`;
+            }
+        }
+
+        // 作业数据保留
+        const homeworkData = {
+            chinese: {
+                title: '语文作业',
+                icon: 'fas fa-book',
+                color: '#e53e3e',
+                content: {
+                    subject: '语文',
+                    teacher: '庄老师',
+                    deadline: '2026-1-L',
+                    status: '已更新',
+                    description: '无数据',
+                    requirements: ['暂无'],
+                    tips: '暂无。'
+                }
+            },
+            math: {
+                title: '数学作业',
+                icon: 'fas fa-calculator',
+                color: '#3182ce',
+                content: {
+                    subject: '数学',
+                    teacher: '殷老师',
+                    deadline: '2026-1-L',
+                    status: '已更新',
+                    description: '无数据',
+                    requirements: ['暂无。'],
+                    tips: '暂无。'
+                }
+            },
+            english: {
+                title: '英语作业',
+                icon: 'fas fa-language',
+                color: '#38a169',
+                content: {
+                    subject: '英语',
+                    teacher: '黄老师',
+                    deadline: '2026-1-22',
+                    status: '已更新',
+                    description: '30Day打卡和学习通卷子',
+                    requirements: ['具体看群'],
+                    tips: '无'
+                }
+            },
+            physics: {
+                title: '物理作业',
+                icon: 'fas fa-atom',
+                color: '#d69e2e',
+                content: {
+                    subject: '物理',
+                    teacher: '孔老师',
+                    deadline: '今天',
+                    status: '已更新',
+                    description: '无',
+                    requirements: ['无'],
+                    tips: '认真复习'
+                }
+            },
+            chemistry: {
+                title: '化学作业',
+                icon: 'fas fa-flask',
+                color: '#805ad5',
+                content: {
+                    subject: '化学',
+                    teacher: '林老师',
+                    deadline: '2026-1-L',
+                    status: '已更新',
+                    description: '无数据',
+                    requirements: ['无'],
+                    tips: '暂无。'
+                }
+            },
+            politics: {
+                title: '政治作业',
+                icon: 'fas fa-landmark',
+                color: '#dd6b20',
+                content: {
+                    subject: '政治',
+                    teacher: '叶老师',
+                    deadline: '2026-1-22',
+                    status: '已更新',
+                    description: '暂无',
+                    requirements: ['无'],
+                    tips: '暂无'
+                }
+            },
+            other: {
+                title: '其他作业',
+                icon: 'fas fa-ellipsis-h',
+                color: '#718096',
+                content: {
+                    subject: '暂无',
+                    teacher: '暂无',
+                    deadline: '2026-1-L',
+                    status: '已更新',
+                    description: '无',
+                    requirements: ['暂无'],
+                    tips: '2026加油！'
+                }
+            }
+        };
+
+        // 历史数据更新
+        const updateHistory = [
+            { date: '2026-1-27', version: '2026新春版', changes: ['全新2026临时新年主题', '优化粒子效果为烟花系统', '移除密码验证，直接访问', '极速本地时间获取', '隐藏设置，默认高性能模式'] },
+            { date: '2026-1-22', version: 'Version1.9', changes: ['春节版本'] },
+            { date: '2026-1-10', version: '公众号计划', changes: ['STcnAGLcn'] },
+            { date: '2026-1-7', version: 'Version1.8', changes: ['设置更新'] }
+        ];
+
+        // 导航功能
+        function navigateTo(pageName) {
+            const currentPage = document.querySelector('.page.active');
+            const targetPage = document.getElementById(`page-${pageName}`);
+            
+            if (currentPage === targetPage) return;
+            
+            if (currentPage) {
+                currentPage.classList.remove('active');
+                currentPage.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    currentPage.classList.remove('fade-out');
+                    currentPage.style.display = 'none';
+                    
+                    if (targetPage) {
+                        targetPage.style.display = 'block';
+                        setTimeout(() => {
+                            targetPage.classList.add('active');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            applyStaggerAnimation();
+                        }, 10);
+                    }
+                }, 250);
+            }
+            
+            document.querySelectorAll('.nav-menu li').forEach(li => li.classList.remove('active'));
+            document.querySelector(`.nav-menu li[data-page="${pageName}"]`)?.classList.add('active');
+            
+            document.getElementById('navMenu').classList.remove('active');
+            const icon = document.querySelector('#mobileToggle i');
+            if (icon) {
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+            }
+        }
+
+        function setupNavigation() {
+            document.querySelectorAll('.nav-menu li[data-page]').forEach(item => {
+                item.addEventListener('click', () => {
+                    navigateTo(item.dataset.page);
+                });
+            });
+        }
+
+        function setupMobileMenu() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const navMenu = document.getElementById('navMenu');
+            
+            if (mobileToggle && navMenu) {
+                mobileToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                    const icon = mobileToggle.querySelector('i');
+                    icon.classList.toggle('fa-bars');
+                    icon.classList.toggle('fa-times');
+                });
+                
+                navMenu.querySelectorAll('li').forEach(item => {
+                    item.addEventListener('click', () => {
+                        navMenu.classList.remove('active');
+                        const icon = mobileToggle.querySelector('i');
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    });
+                });
+            }
+        }
+
+        function renderUpdateHistory() {
+            const timeline = document.getElementById('historyTimeline');
+            if (!timeline) return;
+
+            timeline.innerHTML = updateHistory.map((item, index) => `
+                <div class="history-item stagger-fade-in" style="animation-delay: ${(index + 1) * 0.1}s">
+                    <div class="history-card">
+                        <div class="history-header">
+                            <div class="history-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                ${item.date}
+                            </div>
+                            <div class="history-version">
+                                ${item.version}
+                            </div>
+                        </div>
+                        <ul class="history-changes">
+                            ${item.changes.map(change => `
+                                <li class="history-change">${change}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupHomeworkCards() {
+            const homeworkCards = document.querySelectorAll('.homework-card');
+            homeworkCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const subject = card.dataset.subject;
+                    if (subject) {
+                        showHomeworkModal(subject);
+                    }
+                });
+            });
+        }
+
+        function showHomeworkModal(subject) {
+            const data = homeworkData[subject];
+            if (!data) return;
+
+            const modalOverlay = document.getElementById('homeworkModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSubject = document.getElementById('modalSubject');
+            const modalBody = document.getElementById('modalBody');
+
+            if (modalTitle) {
+                const icon = modalTitle.querySelector('i');
+                if (icon) {
+                    icon.className = data.icon;
+                    icon.style.color = data.color;
+                }
+            }
+            if (modalSubject) modalSubject.textContent = data.title;
+
+            const content = data.content;
+            if (modalBody) {
+                modalBody.innerHTML = `
+                    <h4>作业描述</h4>
+                    <p>${content.description}</p>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">科目</div>
+                            <div class="info-value">${content.subject}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">老师</div>
+                            <div class="info-value">${content.teacher}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">发布时间</div>
+                            <div class="info-value">${content.deadline}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">状态</div>
+                            <div class="info-value">${content.status}</div>
+                        </div>
+                    </div>
+
+                    <h4>作业详情</h4>
+                    <ul>
+                        ${content.requirements.map(req => `<li>${req}</li>`).join('')}
+                    </ul>
+
+                    <h4>提示</h4>
+                    <p>${content.tips}</p>
+                `;
+            }
+
+            if (modalOverlay) {
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideHomeworkModal() {
+            const modalOverlay = document.getElementById('homeworkModal');
+            if (modalOverlay) {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function setupModal() {
+            const modalOverlay = document.getElementById('homeworkModal');
+            const modalClose = document.getElementById('modalClose');
+            const modalButton = document.getElementById('modalButton');
+
+            if (modalClose) modalClose.addEventListener('click', hideHomeworkModal);
+            if (modalButton) modalButton.addEventListener('click', hideHomeworkModal);
+            
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) hideHomeworkModal();
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') hideHomeworkModal();
+            });
+        }
+
+        function applyStaggerAnimation() {
+            const cards = document.querySelectorAll('.stagger-fade-in');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.remove('stagger-fade-in');
+                void card.offsetWidth; // 触发重绘
+                card.classList.add('stagger-fade-in');
+            });
+        }
+
+        function setupScrollEffects() {
+            let lastScrollTop = 0;
+            const navbar = document.getElementById('navbar');
+            
+            if (navbar) {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop > lastScrollTop && scrollTop > 100) {
+                        navbar.style.transform = 'translateY(-100%)';
+                    } else {
+                        navbar.style.transform = 'translateY(0)';
+                    }
+                    
+                    lastScrollTop = scrollTop;
+                }, { passive: true });
+            }
+        }
+
+        // 彩蛋：控制台祝福
+        function consoleEasterEgg() {
+            console.log('%c🎊 2026新年快乐 🎊', 'color: #e74c3c; font-size: 24px; font-weight: bold;');
+            console.log('%c愿如晨曦般温暖明亮', 'color: #f39c12; font-size: 16px;');
+            console.log('%cLX · 2026', 'color: #ffd700; font-size: 12px;');
+            
+            // 快捷键彩蛋：连续按L和X显示祝福
+            let keySequence = [];
+            document.addEventListener('keydown', (e) => {
+                keySequence.push(e.key.toLowerCase());
+                if (keySequence.length > 2) keySequence.shift();
+                
+                if (keySequence.join('') === 'lx') {
+                    const blessing = document.getElementById('newYearBlessing');
+                    if (blessing) {
+                        blessing.classList.add('show');
+                        setTimeout(() => blessing.classList.remove('show'), 3000);
+                    }
+                }
+            });
+        }
+
+        // 极速初始化（优化加载流程）
+        function fastInitialize() {
+            // 立即显示时间
+            updateLocalTime();
+            detectUA();
+            updateUptime();
+            
+            // 启动计时器
+            setInterval(() => {
+                updateLocalTime();
+                updateUptime();
+            }, 1000);
+            
+            // 初始化UI
+            setupNavigation();
+            setupMobileMenu();
+            setupHomeworkCards();
+            setupModal();
+            setupScrollEffects();
+            renderUpdateHistory();
+            
+            // 启动高性能粒子
+            new NewYearParticleSystem();
+            
+            // 控制台彩蛋
+            consoleEasterEgg();
+            
+            // 快速移除加载页
+            setTimeout(() => {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.opacity = '0';
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                    }, 500);
+                }
+            }, 800);
+        }
+
+        // 页面加载完成后立即执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fastInitialize);
+        } else {
+            fastInitialize();
+        }
+
+        // 窗口大小改变处理
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                const navMenu = document.getElementById('navMenu');
+                if (navMenu) navMenu.classList.remove('active');
+            }
+        });
+        
+        // 页面显示处理（针对返回按钮）
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                updateLocalTime();
+                updateUptime();
+            }
+        });
+    </script>
+</body>
+</html>
